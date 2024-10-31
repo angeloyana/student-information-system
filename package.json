@@ -1,7 +1,9 @@
 {
-  "name": "sis",
+  "name": "student-information-system",
   "version": "0.0.1",
   "type": "module",
+  "private": true,
+  "license": "MIT",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
