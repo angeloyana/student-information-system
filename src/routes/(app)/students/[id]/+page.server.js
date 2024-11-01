@@ -1,13 +1,17 @@
-import { eq } from 'drizzle-orm';
+import { eq, getTableColumns } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
-import { students } from '$lib/server/db/schema';
+import { classrooms, students } from '$lib/server/db/schema';
 
 export const load = async ({ params }) => {
   const result = await db
-    .select()
+    .select({
+      ...getTableColumns(students),
+      classroom: getTableColumns(classrooms),
+    })
     .from(students)
+    .leftJoin(classrooms, eq(students.classroomId, classrooms.id))
     .where(eq(students.id, params.id));
 
   if (!result[0]) {

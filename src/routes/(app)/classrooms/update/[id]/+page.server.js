@@ -4,31 +4,22 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { error } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
-import { classrooms, students } from '$lib/server/db/schema';
+import { classrooms } from '$lib/server/db/schema';
 import { formSchema } from '../../form-schema';
 
 export const load = async ({ params }) => {
   const result = await db
     .select()
-    .from(students)
-    .where(eq(students.id, params.id));
+    .from(classrooms)
+    .where(eq(classrooms.id, params.id));
 
   if (!result[0]) {
     error(404);
   }
 
-  const student = result[0];
-  const classroomsResult = await db.select().from(classrooms);
-
+  const classroom = result[0];
   return {
-    classrooms: classroomsResult,
-    form: await superValidate(
-      {
-        ...student,
-        birthDate: student.birthDate.toISOString().slice(0, 10),
-      },
-      zod(formSchema)
-    ),
+    form: await superValidate(classroom, zod(formSchema)),
   };
 };
 
@@ -44,12 +35,9 @@ export const actions = {
 
     const { data } = form;
     await db
-      .update(students)
-      .set({
-        ...data,
-        birthDate: new Date(data.birthDate),
-      })
-      .where(eq(students.id, event.params.id));
+      .update(classrooms)
+      .set(data)
+      .where(eq(classrooms.id, event.params.id));
 
     return {
       form,

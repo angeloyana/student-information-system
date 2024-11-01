@@ -7,4 +7,10 @@ export const students = sqliteTable('students', {
   sex: text('sex').notNull(),
   birthDate: integer('birth_date', { mode: 'timestamp' }).notNull(),
   email: text('email').notNull(),
+  classroomId: integer('classroom_id').references(() => classrooms.id),
+});
+
+export const classrooms = sqliteTable('classrooms', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').unique().notNull(),
 });

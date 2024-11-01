@@ -222,7 +222,9 @@
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {column.columnDef.meta?.label || column.columnDef.header}
+                {column.columnDef.header instanceof Function
+                  ? column.columnDef.meta?.label
+                  : column.columnDef.header}
               </DropdownMenu.CheckboxItem>
             {/if}
           {/each}

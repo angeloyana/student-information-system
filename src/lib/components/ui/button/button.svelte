@@ -39,6 +39,7 @@
     ref = $bindable(null),
     href = undefined,
     type = 'button',
+    text,
     children,
     ...restProps
   } = $props();
@@ -52,6 +53,7 @@
     {...restProps}
   >
     {@render children?.()}
+    {text}
   </a>
 {:else}
   <button
@@ -61,5 +63,6 @@
     {...restProps}
   >
     {@render children?.()}
+    {text}
   </button>
 {/if}

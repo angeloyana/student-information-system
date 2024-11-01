@@ -25,70 +25,27 @@ export const columns = [
     enableColumnFilter: false,
   },
   {
-    accessorKey: 'firstName',
+    accessorKey: 'name',
     header: ({ column }) =>
       renderComponent(SortButton, {
-        label: 'First Name',
+        label: 'Name',
         order: column.getIsSorted(),
         onclick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
       }),
     cell: (props) => props.getValue(),
     meta: {
-      label: 'First Name',
+      label: 'Name',
     },
   },
   {
-    accessorKey: 'lastName',
-    header: ({ column }) =>
-      renderComponent(SortButton, {
-        label: 'Last Name',
-        order: column.getIsSorted(),
-        onclick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-      }),
-    cell: (props) => props.getValue(),
-    meta: {
-      label: 'Last Name',
-    },
-  },
-  {
-    accessorKey: 'sex',
-    header: 'Sex',
-    cell: (props) => props.getValue(),
-  },
-  {
-    accessorKey: 'birthDate',
-    header: ({ column }) =>
-      renderComponent(SortButton, {
-        label: 'Birth Date',
-        order: column.getIsSorted(),
-        onclick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-      }),
-    cell: (props) => props.getValue().toISOString().slice(0, 10),
-    meta: {
-      label: 'Birth Date',
-    },
-    enableColumnFilter: false,
-  },
-  {
-    accessorKey: 'email',
-    header: 'Email',
-    cell: (props) => props.getValue(),
-  },
-  {
-    id: 'classroomName',
-    accessorKey: 'classroom.name',
-    header: 'Classroom',
-    cell: (props) => {
-      const classroomName = props.getValue();
-      if (!classroomName) return 'N/A';
-
-      return renderComponent(Button, {
-        href: `/classrooms?name=${classroomName}`,
+    header: 'Students',
+    cell: ({ row }) =>
+      renderComponent(Button, {
+        href: `/students?classroomName=${row.original.name}`,
         variant: 'link',
         class: 'p-0',
-        text: classroomName,
-      });
-    },
+        text: 'View Details',
+      }),
   },
   {
     id: 'actions',

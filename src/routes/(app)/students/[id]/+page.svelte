@@ -1,6 +1,8 @@
 <script>
   import lodash from 'lodash-es';
+  import ExternalLink from 'lucide-svelte/icons/external-link';
 
+  import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
 
@@ -28,5 +30,17 @@
   <div class="space-y-2">
     <Label>Email</Label>
     <Input value={student.email} disabled />
+  </div>
+  <div class="space-y-2">
+    <Label>Classroom</Label>
+    <Button
+      href="/classrooms?name={student.classroom?.name}"
+      variant="outline"
+      disabled={!student.classroom}
+      class="w-full justify-start font-normal"
+    >
+      <ExternalLink class="size-4" />
+      {student.classroom?.name || 'N/A'}
+    </Button>
   </div>
 </div>

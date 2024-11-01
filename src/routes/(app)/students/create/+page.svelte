@@ -4,6 +4,7 @@
   import { zodClient } from 'sveltekit-superforms/adapters';
 
   import { goto } from '$app/navigation';
+  import Combobox from '$lib/components/custom/combobox.svelte';
   import DatePicker from '$lib/components/custom/date-picker.svelte';
   import { Input } from '$lib/components/ui/input';
   import * as Form from '$lib/components/ui/form';
@@ -23,6 +24,10 @@
   });
 
   const { form: formData, enhance } = form;
+  const classrooms = data.classrooms.map(({ id, name }) => ({
+    label: name,
+    value: id,
+  }));
 </script>
 
 <form method="POST" use:enhance class="p-4">
@@ -81,6 +86,21 @@
         {/snippet}
       </Form.Control>
       <Form.FieldErrors />
+    </Form.Field>
+    <Form.Field name="classroomId" {form}>
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Classroom</Form.Label>
+          <Combobox
+            placeholder="Select a classroom"
+            items={classrooms}
+            bind:value={$formData.classroomId}
+            {...props}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+      <input type="hidden" name="classroomId" value={$formData.classroomId} />
     </Form.Field>
   </div>
   <Form.Button class="mt-4">Create</Form.Button>

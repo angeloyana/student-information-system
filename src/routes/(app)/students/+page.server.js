@@ -1,7 +1,17 @@
-import { asc, count, desc, inArray, like, or, sql } from 'drizzle-orm';
+import {
+  asc,
+  count,
+  desc,
+  eq,
+  getTableColumns,
+  inArray,
+  like,
+  or,
+  sql,
+} from 'drizzle-orm';
 
 import { db } from '$lib/server/db';
-import { students } from '$lib/server/db/schema';
+import { classrooms, students } from '$lib/server/db/schema';
 
 export const load = async ({ url }) => {
   const limit = parseInt(url.searchParams.get('limit')) || 5;
@@ -13,6 +23,7 @@ export const load = async ({ url }) => {
   const lastName = url.searchParams.get('lastName');
   const sex = url.searchParams.get('sex');
   const email = url.searchParams.get('email');
+  const classroomName = url.searchParams.get('classroomName');
 
   const filters = [];
   const columnFilters = []; // to be used in client-side
@@ -44,6 +55,13 @@ export const load = async ({ url }) => {
     columnFilters.push({ id: 'email', value: email });
   }
 
+  if (classroomName) {
+    filters.push(
+      like(sql`LOWER(${classrooms.name})`, `%${classroomName.toLowerCase()}%`)
+    );
+    columnFilters.push({ id: 'classroomName', value: classroomName });
+  }
+
   if (order && sortId in students) {
     orderBy = order === 'desc' ? desc(students[sortId]) : asc(students[sortId]);
   } else {
@@ -53,8 +71,12 @@ export const load = async ({ url }) => {
 
   const [studentsResult, studentsCount] = await Promise.all([
     db
-      .select()
+      .select({
+        ...getTableColumns(students),
+        classroom: getTableColumns(classrooms),
+      })
       .from(students)
+      .leftJoin(classrooms, eq(students.classroomId, classrooms.id))
       .where(or(...filters))
       .orderBy(orderBy)
       .limit(limit)
@@ -62,6 +84,7 @@ export const load = async ({ url }) => {
     db
       .select({ count: count() })
       .from(students)
+      .leftJoin(classrooms, eq(students.classroomId, classrooms.id))
       .where(or(...filters)),
   ]);
 

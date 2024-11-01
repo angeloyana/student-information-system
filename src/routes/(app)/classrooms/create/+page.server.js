@@ -3,14 +3,11 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { fail } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
-import { classrooms, students } from '$lib/server/db/schema';
+import { classrooms } from '$lib/server/db/schema';
 import { formSchema } from '../form-schema';
 
 export const load = async () => {
-  const classroomsResult = await db.select().from(classrooms);
-
   return {
-    classrooms: classroomsResult,
     form: await superValidate(zod(formSchema)),
   };
 };
@@ -26,10 +23,7 @@ export const actions = {
     }
 
     const { data } = form;
-    await db.insert(students).values({
-      ...data,
-      birthDate: new Date(data.birthDate),
-    });
+    await db.insert(classrooms).values(data);
 
     return {
       form,
