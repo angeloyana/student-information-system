@@ -1,7 +1,6 @@
+import { RowActions, SortButton } from '$lib/components/custom/data-table';
 import { Checkbox } from '$lib/components/ui/checkbox';
 import { renderComponent } from '$lib/components/ui/data-table';
-import RowActions from './data-table-row-actions.svelte';
-import SortButton from './data-table-sort-button.svelte';
 
 export const columns = [
   {
@@ -22,6 +21,7 @@ export const columns = [
       }),
     enableHiding: false,
     enableSorting: false,
+    enableColumnFilter: false,
   },
   {
     accessorKey: 'firstName',
@@ -32,6 +32,9 @@ export const columns = [
         onclick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
       }),
     cell: (props) => props.getValue(),
+    meta: {
+      label: 'First Name',
+    },
   },
   {
     accessorKey: 'lastName',
@@ -42,6 +45,9 @@ export const columns = [
         onclick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
       }),
     cell: (props) => props.getValue(),
+    meta: {
+      label: 'Last Name',
+    },
   },
   {
     accessorKey: 'sex',
@@ -57,6 +63,10 @@ export const columns = [
         onclick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
       }),
     cell: (props) => props.getValue().toISOString().slice(0, 10),
+    meta: {
+      label: 'Birth Date',
+    },
+    enableColumnFilter: false,
   },
   {
     accessorKey: 'email',
@@ -72,5 +82,6 @@ export const columns = [
       }),
     enableHiding: false,
     enableSorting: false,
+    enableColumnFilter: false,
   },
 ];

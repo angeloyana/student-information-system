@@ -1,9 +1,9 @@
 <script>
-  import DataTable from './data-table.svelte';
+  import DataTable from '$lib/components/custom/data-table';
   import { columns } from './columns';
 
   let { data } = $props();
-  let { students, filter, pageCount, pageSize } = $derived(data);
+  let { students, columnFilters, pageCount, pageSize } = $derived(data);
 </script>
 
-<DataTable data={students} {filter} {pageCount} {pageSize} {columns} />
+<DataTable data={students} {columnFilters} {pageCount} {pageSize} {columns} />

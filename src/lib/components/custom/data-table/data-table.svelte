@@ -5,6 +5,7 @@
   import ChevronLeft from 'lucide-svelte/icons/chevron-left';
   import ChevronRight from 'lucide-svelte/icons/chevron-right';
   import Plus from 'lucide-svelte/icons/plus';
+  import SlidersHorizontal from 'lucide-svelte/icons/sliders-horizontal';
   import Trash2 from 'lucide-svelte/icons/trash-2';
   import { toast } from 'svelte-sonner';
   import { getCoreRowModel } from '@tanstack/table-core';
@@ -16,16 +17,27 @@
   import { createSvelteTable, FlexRender } from '$lib/components/ui/data-table';
   import { Input } from '$lib/components/ui/input';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+  import * as Popover from '$lib/components/ui/popover';
   import * as Select from '$lib/components/ui/select';
   import * as Table from '$lib/components/ui/table';
 
-  let { columns, data, filter, pageCount, pageSize } = $props();
+  let {
+    columns,
+    data,
+    columnFilters: initialColumnFilters,
+    pageCount,
+    pageSize,
+    sortId,
+    order,
+  } = $props();
 
+  let columnFilters = $state(initialColumnFilters);
   let columnVisibility = $state({});
-  let globalFilter = $state(filter);
   let pagination = $state({ pageIndex: 0, pageSize });
   let rowSelection = $state({});
-  let sorting = $state([]);
+  let sorting = $state(
+    sortId && order ? [{ id: sortId, desc: order === 'desc' }] : []
+  );
 
   const table = createSvelteTable({
     get data() {
@@ -47,11 +59,11 @@
         columnVisibility = updater;
       }
     },
-    onGlobalFilterChange: (updater) => {
+    onColumnFiltersChange: (updater) => {
       if (updater instanceof Function) {
-        globalFilter = updater(globalFilter);
+        columnFilters = updater(columnFilters);
       } else {
-        globalFilter = updater;
+        columnFilters = updater;
       }
       reloadData({ keepFocus: true });
       pagination.pageIndex = 0;
@@ -80,6 +92,9 @@
       reloadData();
     },
     state: {
+      get columnFilters() {
+        return columnFilters;
+      },
       get columnVisibility() {
         return columnVisibility;
       },
@@ -101,11 +116,16 @@
     query.set('limit', pagination.pageSize);
     query.set('skip', pagination.pageIndex * pagination.pageSize);
 
-    if (globalFilter) {
-      query.set('q', globalFilter);
-    } else {
-      query.delete('q');
-    }
+    table.getAllColumns().forEach((column) => {
+      if (column.getCanFilter()) {
+        const filterValue = column.getFilterValue();
+        if (filterValue) {
+          query.set(column.id, filterValue);
+        } else {
+          query.delete(column.id);
+        }
+      }
+    });
 
     if (sorting[0]) {
       query.set('sort', sorting[0].id);
@@ -139,18 +159,34 @@
 
 <div class="grid gap-4 p-4">
   <div class="flex flex-wrap items-center justify-between gap-2">
-    <div class="flex space-x-2">
-      <Input
-        placeholder="Search for rows..."
-        value={filter}
-        oninput={(e) => table.setGlobalFilter(e.target.value)}
-        class="w-fit"
-      />
+    <Popover.Root>
+      <Popover.Trigger>
+        {#snippet child({ props })}
+          <Button variant="outline" {...props}>
+            <span>Filter by</span>
+            <SlidersHorizontal class="size-4" />
+          </Button>
+        {/snippet}
+      </Popover.Trigger>
+      <Popover.Content>
+        <div class="grid gap-4">
+          {#each table.getAllColumns() as column (column.id)}
+            {#if column.getCanFilter()}
+              <Input
+                placeholder={column.columnDef.meta?.label ||
+                  column.columnDef.header}
+                value={column.getFilterValue()}
+                oninput={(e) => column.setFilterValue(e.target.value)}
+              />
+            {/if}
+          {/each}
+        </div>
+      </Popover.Content>
+    </Popover.Root>
+    <div class="flex gap-2">
       <Button size="icon" onclick={handleOpenCreateForm}>
         <Plus class="size-4" />
       </Button>
-    </div>
-    <div class="flex space-x-2">
       <form
         method="POST"
         action="?/delete"
@@ -179,17 +215,16 @@
           {/snippet}
         </DropdownMenu.Trigger>
         <DropdownMenu.Content>
-          {#each table
-            .getAllColumns()
-            .filter((col) => col.getCanHide()) as column (column.id)}
-            <DropdownMenu.CheckboxItem
-              controlledChecked
-              checked={column.getIsVisible()}
-              onCheckedChange={(value) => column.toggleVisibility(!!value)}
-              class="capitalize"
-            >
-              {column.id}
-            </DropdownMenu.CheckboxItem>
+          {#each table.getAllColumns() as column (column.id)}
+            {#if column.getCanHide()}
+              <DropdownMenu.CheckboxItem
+                controlledChecked
+                checked={column.getIsVisible()}
+                onCheckedChange={(value) => column.toggleVisibility(!!value)}
+              >
+                {column.columnDef.meta?.label || column.columnDef.header}
+              </DropdownMenu.CheckboxItem>
+            {/if}
           {/each}
         </DropdownMenu.Content>
       </DropdownMenu.Root>
