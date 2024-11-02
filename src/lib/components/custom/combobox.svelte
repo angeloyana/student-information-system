@@ -2,6 +2,8 @@
   import Check from 'lucide-svelte/icons/check';
   import ChevronsUpDown from 'lucide-svelte/icons/chevrons-up-down';
   import { tick } from 'svelte';
+  import { VList } from 'virtua/svelte';
+
   import * as Command from '$lib/components/ui/command/index.js';
   import * as Popover from '$lib/components/ui/popover/index.js';
   import { Button } from '$lib/components/ui/button/index.js';
@@ -12,8 +14,12 @@
   let open = $state(false);
   let triggerRef = $state(null);
 
-  const selectedValue = $derived(
-    items.find((item) => item.value === value)?.label
+  let selectedValue = $state();
+  let searchValue = $state('');
+  let filteredItems = $derived(
+    items.filter(({ label }) =>
+      label.toLowerCase().includes(searchValue.toLowerCase())
+    )
   );
 
   // We want to refocus the trigger button when the user selects
@@ -37,35 +43,40 @@
         role="combobox"
         aria-expanded={open}
       >
-        {selectedValue || placeholder}
+        {selectedValue?.label || placeholder}
         <ChevronsUpDown class="size-4 opacity-50" />
       </Button>
     {/snippet}
   </Popover.Trigger>
-  <Popover.Content class="w-[200px] p-0">
-    <Command.Root>
-      <Command.Input placeholder="Search..." />
-      <Command.List>
+  <Popover.Content class="p-0">
+    <Command.Root shouldFilter={false}>
+      <Command.Input placeholder="Search..." bind:value={searchValue} />
+      <Command.List class="max-h-none">
         <Command.Empty>No result found.</Command.Empty>
-        <Command.Group>
-          {#each items as item}
+        <VList
+          data={filteredItems}
+          style="height: {filteredItems.length * 32 +
+            8}px; max-height: 300px; padding: 0.25rem"
+          getKey={(_, i) => i}
+        >
+          {#snippet children(item)}
             <Command.Item
-              value={item.label}
               onSelect={() => {
                 value = item.value;
+                selectedValue = item;
                 closeAndFocusTrigger();
               }}
             >
               <Check
                 class={cn(
-                  'mr-2 size-4',
-                  value !== item.value && 'text-transparent'
+                  'size-4',
+                  !(selectedValue?.id === item.id) && 'text-transparent'
                 )}
               />
               {item.label}
             </Command.Item>
-          {/each}
-        </Command.Group>
+          {/snippet}
+        </VList>
       </Command.List>
     </Command.Root>
   </Popover.Content>

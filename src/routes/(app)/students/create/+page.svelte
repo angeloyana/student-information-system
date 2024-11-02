@@ -25,6 +25,7 @@
 
   const { form: formData, enhance } = form;
   const classrooms = data.classrooms.map(({ id, name }) => ({
+    id,
     label: name,
     value: id,
   }));
