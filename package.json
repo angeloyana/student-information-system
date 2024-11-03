@@ -12,7 +12,8 @@
     "lint": "prettier --check .",
     "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "app:create-user": "node ./scripts/create-user.js"
   },
   "devDependencies": {
     "@internationalized/date": "^3.5.6",
@@ -21,7 +22,7 @@
     "@sveltejs/vite-plugin-svelte": "^4.0.0",
     "@types/better-sqlite3": "^7.6.11",
     "autoprefixer": "^10.4.20",
-    "bits-ui": "^1.0.0-next.35",
+    "bits-ui": "^1.0.0-next.39",
     "clsx": "^2.1.1",
     "drizzle-kit": "^0.22.0",
     "formsnap": "^2.0.0-next.0",
@@ -41,10 +42,13 @@
     "zod": "^3.23.8"
   },
   "dependencies": {
+    "@lucia-auth/adapter-drizzle": "^1.1.0",
     "@tanstack/table-core": "^8.20.5",
+    "bcrypt": "^5.1.1",
     "better-sqlite3": "^11.1.2",
     "drizzle-orm": "^0.33.0",
     "lodash-es": "^4.17.21",
+    "lucia": "^3.2.2",
     "virtua": "^0.36.1"
   }
 }

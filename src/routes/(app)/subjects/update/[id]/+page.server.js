@@ -1,7 +1,7 @@
 import { eq, sql } from 'drizzle-orm';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
 import {
@@ -13,7 +13,11 @@ import {
 } from '$lib/server/db/schema';
 import { formSchema } from '../../form-schema';
 
-export const load = async ({ params }) => {
+export const load = async ({ locals, params }) => {
+  if (!locals.user) {
+    redirect(302, '/auth/login');
+  }
+
   const result = await db
     .select()
     .from(subjects)
@@ -60,6 +64,10 @@ export const load = async ({ params }) => {
 
 export const actions = {
   default: async (event) => {
+    if (!event.locals.user) {
+      redirect(302, '/auth/login');
+    }
+
     const form = await superValidate(event, zod(formSchema));
 
     if (!form.valid) {

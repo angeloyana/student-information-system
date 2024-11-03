@@ -9,11 +9,16 @@ import {
   or,
   sql,
 } from 'drizzle-orm';
+import { redirect } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
 import { classrooms, students } from '$lib/server/db/schema';
 
-export const load = async ({ url }) => {
+export const load = async ({ locals, url }) => {
+  if (!locals.user) {
+    redirect(302, '/auth/login');
+  }
+
   const limit = parseInt(url.searchParams.get('limit')) || 5;
   const offset = parseInt(url.searchParams.get('skip')) || 0;
   let sortId = url.searchParams.get('sort');
@@ -99,7 +104,11 @@ export const load = async ({ url }) => {
 };
 
 export const actions = {
-  delete: async ({ request }) => {
+  delete: async ({ locals, request }) => {
+    if (!locals.user) {
+      redirect(302, '/auth/login');
+    }
+
     const formData = await request.formData();
     const ids = formData.getAll('id');
 

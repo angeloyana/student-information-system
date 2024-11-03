@@ -1,14 +1,12 @@
 <script>
   import { page } from '$app/stores';
   import { Separator } from '$lib/components/ui/separator';
-  import { Toaster } from '$lib/components/ui/sonner';
   import * as Sidebar from '$lib/components/ui/sidebar';
   import AppSidebar from './app-sidebar.svelte';
 
   let { children } = $props();
 </script>
 
-<Toaster />
 <Sidebar.Provider>
   <AppSidebar />
   <main class="flex-1">

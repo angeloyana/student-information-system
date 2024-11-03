@@ -1,12 +1,16 @@
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
 import { classrooms, students } from '$lib/server/db/schema';
 import { formSchema } from '../form-schema';
 
-export const load = async () => {
+export const load = async ({ locals }) => {
+  if (!locals.user) {
+    redirect(302, '/auth/login');
+  }
+
   const classroomsResult = await db.select().from(classrooms);
 
   return {
@@ -17,6 +21,10 @@ export const load = async () => {
 
 export const actions = {
   default: async (event) => {
+    if (!event.locals.user) {
+      redirect(302, '/auth/login');
+    }
+
     const form = await superValidate(event, zod(formSchema));
 
     if (!form.valid) {

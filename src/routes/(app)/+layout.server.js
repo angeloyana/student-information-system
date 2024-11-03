@@ -5,5 +5,7 @@ export const load = ({ locals }) => {
     redirect(302, '/auth/login');
   }
 
-  redirect(302, '/dashboard');
+  return {
+    user: locals.user,
+  };
 };

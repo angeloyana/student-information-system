@@ -4,6 +4,7 @@ import {
   integer,
   primaryKey,
 } from 'drizzle-orm/sqlite-core';
+import { generateId } from 'lucia';
 
 export const students = sqliteTable('students', {
   id: integer('id').primaryKey({ autoIncrement: true }),
@@ -66,3 +67,23 @@ export const subjectsToTeachers = sqliteTable(
     pk: primaryKey(table.teacherId, table.subjectId),
   })
 );
+
+export const users = sqliteTable('users', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => generateId(15)),
+  firstName: text('first_name').notNull(),
+  lastName: text('last_name').notNull(),
+  email: text('email').unique().notNull(),
+  password: text('password').notNull(),
+});
+
+export const sessions = sqliteTable('sessions', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => generateId(15)),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  expiresAt: integer('expires_at').notNull(),
+});

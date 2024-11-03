@@ -11,6 +11,7 @@
   import Users from 'lucide-svelte/icons/users';
   import { toggleMode } from 'mode-watcher';
 
+  import { page } from '$app/stores';
   import { Button } from '$lib/components/ui/button';
   import * as Avatar from '$lib/components/ui/avatar';
   import * as Sidebar from '$lib/components/ui/sidebar';
@@ -113,7 +114,9 @@
             <Avatar.Fallback>CN</Avatar.Fallback>
           </Avatar.Root>
           <div class="grid leading-tight">
-            <span class="truncate text-sm font-semibold">Angelo Yana</span>
+            <span class="truncate text-sm font-semibold"
+              >{$page.data.user.fullName}</span
+            >
             <span class="truncate text-xs">Superuser</span>
           </div>
         </Sidebar.MenuButton>

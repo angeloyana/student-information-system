@@ -4,7 +4,11 @@ import { error } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { classrooms, students } from '$lib/server/db/schema';
 
-export const load = async ({ params }) => {
+export const load = async ({ locals, params }) => {
+  if (!locals.user) {
+    redirect(302, '/auth/login');
+  }
+
   const result = await db
     .select({
       ...getTableColumns(students),

@@ -28,6 +28,12 @@
 
   const handleDeleteForm = () => {
     return ({ result, update }) => {
+      if (result.type === 'redirect') {
+        toast.error('Unauthorized action');
+        goto(result.location);
+        return;
+      }
+
       if (result.type !== 'success') {
         toast.error('Something went wrong');
         return;
