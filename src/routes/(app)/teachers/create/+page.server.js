@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm';
+import { eq, inArray, isNull } from 'drizzle-orm';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { fail } from '@sveltejs/kit';
@@ -8,22 +8,20 @@ import {
   classrooms,
   subjects,
   teachers,
-  subjectsToClassrooms,
+  subjectsToTeachers,
 } from '$lib/server/db/schema';
 import { formSchema } from '../form-schema';
 
 export const load = async () => {
+  const classroomsResult = await db
+    .select()
+    .from(classrooms)
+    .where(isNull(classrooms.teacherId));
   const subjectsResult = await db.select().from(subjects);
-  const teachersResult = await db
-    .select({
-      id: teachers.id,
-      fullName: sql`${teachers.firstName} || ' ' || ${teachers.lastName}`,
-    })
-    .from(teachers);
 
   return {
+    classrooms: classroomsResult,
     subjects: subjectsResult,
-    teachers: teachersResult,
     form: await superValidate(zod(formSchema)),
   };
 };
@@ -38,16 +36,18 @@ export const actions = {
       });
     }
 
-    const { subjectIds, ...classroomData } = form.data;
-    const [classroom] = await db
-      .insert(classrooms)
-      .values(classroomData)
-      .returning();
+    const { classroomIds, subjectIds, ...teacherData } = form.data;
+    const [teacher] = await db.insert(teachers).values(teacherData).returning();
+
+    await db
+      .update(classrooms)
+      .set({ teacherId: teacher.id })
+      .where(inArray(classrooms.id, classroomIds));
 
     if (subjectIds.length) {
-      await db.insert(subjectsToClassrooms).values(
+      await db.insert(subjectsToTeachers).values(
         subjectIds.map((subjectId) => ({
-          classroomId: classroom.id,
+          teacherId: teacher.id,
           subjectId,
         }))
       );

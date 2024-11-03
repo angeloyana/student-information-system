@@ -39,8 +39,12 @@
       disabled={!student.classroom}
       class="w-full justify-start font-normal"
     >
-      <ExternalLink class="size-4" />
-      {student.classroom?.name || 'N/A'}
+      {#if student.classroom?.name}
+        <ExternalLink class="size-4" />
+        {student.classroom?.name}
+      {:else}
+        N/A
+      {/if}
     </Button>
   </div>
 </div>

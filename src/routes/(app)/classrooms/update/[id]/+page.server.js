@@ -1,10 +1,15 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { error } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
-import { classrooms } from '$lib/server/db/schema';
+import {
+  classrooms,
+  subjects,
+  teachers,
+  subjectsToClassrooms,
+} from '$lib/server/db/schema';
 import { formSchema } from '../../form-schema';
 
 export const load = async ({ params }) => {
@@ -18,8 +23,30 @@ export const load = async ({ params }) => {
   }
 
   const classroom = result[0];
+  const subjectIds = (
+    await db
+      .select({ subjectId: subjectsToClassrooms.subjectId })
+      .from(subjectsToClassrooms)
+      .where(eq(subjectsToClassrooms.classroomId, classroom.id))
+  ).map(({ subjectId }) => subjectId);
+  const subjectsResult = await db.select().from(subjects);
+  const teachersResult = await db
+    .select({
+      id: teachers.id,
+      fullName: sql`${teachers.firstName} || ' ' || ${teachers.lastName}`,
+    })
+    .from(teachers);
+
   return {
-    form: await superValidate(classroom, zod(formSchema)),
+    subjects: subjectsResult,
+    teachers: teachersResult,
+    form: await superValidate(
+      {
+        ...classroom,
+        subjectIds,
+      },
+      zod(formSchema)
+    ),
   };
 };
 
@@ -33,11 +60,26 @@ export const actions = {
       });
     }
 
-    const { data } = form;
+    const { subjectIds, ...classroomData } = form.data;
+    const classroomId = event.params.id;
+
     await db
       .update(classrooms)
-      .set(data)
-      .where(eq(classrooms.id, event.params.id));
+      .set(classroomData)
+      .where(eq(classrooms.id, classroomId));
+
+    await db
+      .delete(subjectsToClassrooms)
+      .where(eq(subjectsToClassrooms.classroomId, classroomId));
+
+    if (subjectIds.length) {
+      await db.insert(subjectsToClassrooms).values(
+        subjectIds.map((subjectId) => ({
+          classroomId,
+          subjectId,
+        }))
+      );
+    }
 
     return {
       form,

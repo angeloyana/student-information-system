@@ -9,11 +9,12 @@ import {
   subjects,
   teachers,
   subjectsToClassrooms,
+  subjectsToTeachers,
 } from '$lib/server/db/schema';
 import { formSchema } from '../form-schema';
 
 export const load = async () => {
-  const subjectsResult = await db.select().from(subjects);
+  const classroomsResult = await db.select().from(classrooms);
   const teachersResult = await db
     .select({
       id: teachers.id,
@@ -22,7 +23,7 @@ export const load = async () => {
     .from(teachers);
 
   return {
-    subjects: subjectsResult,
+    classrooms: classroomsResult,
     teachers: teachersResult,
     form: await superValidate(zod(formSchema)),
   };
@@ -38,17 +39,23 @@ export const actions = {
       });
     }
 
-    const { subjectIds, ...classroomData } = form.data;
-    const [classroom] = await db
-      .insert(classrooms)
-      .values(classroomData)
-      .returning();
+    const { classroomIds, teacherIds, ...subjectData } = form.data;
+    const [subject] = await db.insert(subjects).values(subjectData).returning();
 
-    if (subjectIds.length) {
+    if (classroomIds.length) {
       await db.insert(subjectsToClassrooms).values(
-        subjectIds.map((subjectId) => ({
-          classroomId: classroom.id,
-          subjectId,
+        classroomIds.map((classroomId) => ({
+          classroomId,
+          subjectId: subject.id,
+        }))
+      );
+    }
+
+    if (teacherIds.length) {
+      await db.insert(subjectsToTeachers).values(
+        teacherIds.map((teacherId) => ({
+          teacherId,
+          subjectId: subject.id,
         }))
       );
     }

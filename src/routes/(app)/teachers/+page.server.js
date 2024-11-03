@@ -11,7 +11,12 @@ import {
 } from 'drizzle-orm';
 
 import { db } from '$lib/server/db';
-import { classrooms, students } from '$lib/server/db/schema';
+import {
+  classrooms,
+  subjects,
+  teachers,
+  subjectsToTeachers,
+} from '$lib/server/db/schema';
 
 export const load = async ({ url }) => {
   const limit = parseInt(url.searchParams.get('limit')) || 5;
@@ -21,9 +26,9 @@ export const load = async ({ url }) => {
 
   const firstName = url.searchParams.get('firstName');
   const lastName = url.searchParams.get('lastName');
-  const sex = url.searchParams.get('sex');
   const email = url.searchParams.get('email');
   const classroomName = url.searchParams.get('classroomName');
+  const subjectName = url.searchParams.get('subjectName');
 
   const filters = [];
   const columnFilters = []; // to be used in client-side
@@ -31,26 +36,21 @@ export const load = async ({ url }) => {
 
   if (firstName) {
     filters.push(
-      like(sql`LOWER(${students.firstName})`, `%${firstName.toLowerCase()}%`)
+      like(sql`LOWER(${teachers.firstName})`, `%${firstName.toLowerCase()}%`)
     );
     columnFilters.push({ id: 'firstName', value: firstName });
   }
 
   if (lastName) {
     filters.push(
-      like(sql`LOWER(${students.lastName})`, `%${lastName.toLowerCase()}%`)
+      like(sql`LOWER(${teachers.lastName})`, `%${lastName.toLowerCase()}%`)
     );
     columnFilters.push({ id: 'lastName', value: lastName });
   }
 
-  if (sex) {
-    filters.push(like(sql`LOWER(${students.sex})`, `%${sex.toLowerCase()}%`));
-    columnFilters.push({ id: 'sex', value: sex });
-  }
-
   if (email) {
     filters.push(
-      like(sql`LOWER(${students.email})`, `%${email.toLowerCase()}%`)
+      like(sql`LOWER(${teachers.email})`, `%${email.toLowerCase()}%`)
     );
     columnFilters.push({ id: 'email', value: email });
   }
@@ -62,36 +62,52 @@ export const load = async ({ url }) => {
     columnFilters.push({ id: 'classroomName', value: classroomName });
   }
 
-  if (order && sortId in students) {
-    orderBy = order === 'desc' ? desc(students[sortId]) : asc(students[sortId]);
+  if (subjectName) {
+    filters.push(
+      like(sql`LOWER(${subjects.name})`, `%${subjectName.toLowerCase()}%`)
+    );
+    columnFilters.push({ id: 'subjectName', value: subjectName });
+  }
+
+  if (order && sortId in teachers) {
+    orderBy = order === 'desc' ? desc(teachers[sortId]) : asc(teachers[sortId]);
   } else {
     sortId = null;
     order = null;
   }
 
-  const [studentsResult, studentsCount] = await Promise.all([
+  const [teachersResult, teachersCount] = await Promise.all([
     db
-      .select({
-        ...getTableColumns(students),
-        classroom: getTableColumns(classrooms),
-      })
-      .from(students)
-      .leftJoin(classrooms, eq(students.classroomId, classrooms.id))
+      .select(getTableColumns(teachers))
+      .from(teachers)
+      .leftJoin(classrooms, eq(classrooms.teacherId, teachers.id))
+      .leftJoin(
+        subjectsToTeachers,
+        eq(subjectsToTeachers.teacherId, teachers.id)
+      )
+      .leftJoin(subjects, eq(subjectsToTeachers.subjectId, subjects.id))
       .where(or(...filters))
+      .groupBy(teachers.id)
       .orderBy(orderBy)
       .limit(limit)
       .offset(offset),
     db
       .select({ count: count() })
-      .from(students)
-      .leftJoin(classrooms, eq(students.classroomId, classrooms.id))
-      .where(or(...filters)),
+      .from(teachers)
+      .leftJoin(classrooms, eq(classrooms.teacherId, teachers.id))
+      .leftJoin(
+        subjectsToTeachers,
+        eq(subjectsToTeachers.teacherId, teachers.id)
+      )
+      .leftJoin(subjects, eq(subjectsToTeachers.subjectId, subjects.id))
+      .where(or(...filters))
+      .groupBy(teachers.id),
   ]);
 
   return {
-    students: studentsResult,
+    teachers: teachersResult,
     columnFilters,
-    pageCount: Math.ceil(studentsCount[0].count / limit),
+    pageCount: Math.ceil(teachersCount.length / limit),
     pageSize: limit,
     sortId,
     order,
@@ -103,7 +119,7 @@ export const actions = {
     const formData = await request.formData();
     const ids = formData.getAll('id');
 
-    await db.delete(students).where(inArray(students.id, ids));
+    await db.delete(teachers).where(inArray(teachers.id, ids));
 
     return { success: true };
   },

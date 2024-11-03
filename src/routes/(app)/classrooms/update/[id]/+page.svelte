@@ -4,6 +4,8 @@
   import { zodClient } from 'sveltekit-superforms/adapters';
 
   import { goto } from '$app/navigation';
+  import Combobox from '$lib/components/custom/combobox.svelte';
+  import MultiSelect from '$lib/components/custom/multi-select.svelte';
   import { Input } from '$lib/components/ui/input';
   import * as Form from '$lib/components/ui/form';
   import * as Select from '$lib/components/ui/select';
@@ -22,6 +24,16 @@
   });
 
   const { form: formData, enhance } = form;
+  const subjects = data.subjects.map(({ id, name }) => ({
+    id,
+    label: name,
+    value: id,
+  }));
+  const teachers = data.teachers.map(({ id, fullName }) => ({
+    id,
+    label: fullName,
+    value: id,
+  }));
 </script>
 
 <form method="POST" use:enhance class="p-4">
@@ -34,6 +46,36 @@
         {/snippet}
       </Form.Control>
       <Form.FieldErrors />
+    </Form.Field>
+    <Form.Field name="subjectIds" {form}>
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Subjects</Form.Label>
+          <MultiSelect
+            items={subjects}
+            placeholder="Select subjects..."
+            bind:value={$formData.subjectIds}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+      {#each $formData.subjectIds as subjectId}
+        <input type="hidden" name="subjectIds" value={subjectId} />
+      {/each}
+    </Form.Field>
+    <Form.Field name="teacherId" {form}>
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Teacher</Form.Label>
+          <Combobox
+            items={teachers}
+            placeholder="Select teacher..."
+            bind:value={$formData.teacherId}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+      <input type="hidden" name="teacherId" value={$formData.teacherId} />
     </Form.Field>
   </div>
   <Form.Button class="mt-4">Update</Form.Button>

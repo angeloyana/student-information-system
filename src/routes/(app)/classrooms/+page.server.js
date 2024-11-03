@@ -1,7 +1,23 @@
-import { asc, count, desc, inArray, like, or, sql } from 'drizzle-orm';
+import {
+  asc,
+  count,
+  desc,
+  eq,
+  getTableColumns,
+  inArray,
+  like,
+  or,
+  sql,
+} from 'drizzle-orm';
 
 import { db } from '$lib/server/db';
-import { classrooms } from '$lib/server/db/schema';
+import {
+  classrooms,
+  students,
+  subjects,
+  teachers,
+  subjectsToClassrooms,
+} from '$lib/server/db/schema';
 
 export const load = async ({ url }) => {
   const limit = parseInt(url.searchParams.get('limit')) || 5;
@@ -10,6 +26,9 @@ export const load = async ({ url }) => {
   let order = url.searchParams.get('order');
 
   const name = url.searchParams.get('name');
+  const studentId = parseInt(url.searchParams.get('studentId'));
+  const subjectName = url.searchParams.get('subjectName');
+  const teacherId = parseInt(url.searchParams.get('teacherId'));
 
   const filters = [];
   const columnFilters = [];
@@ -22,6 +41,23 @@ export const load = async ({ url }) => {
     columnFilters.push({ id: 'name', value: name });
   }
 
+  if (studentId) {
+    filters.push(eq(students.id, studentId));
+    columnFilters.push({ id: 'studentId', value: studentId });
+  }
+
+  if (subjectName) {
+    filters.push(
+      like(sql`LOWER(${subjects.name})`, `%${subjectName.toLowerCase()}%`)
+    );
+    columnFilters.push({ id: 'subjectName', value: subjectName });
+  }
+
+  if (teacherId) {
+    filters.push(eq(teachers.id, teacherId));
+    columnFilters.push({ id: 'teacherId', value: teacherId });
+  }
+
   if (order && sortId in classrooms) {
     orderBy =
       order === 'desc' ? desc(classrooms[sortId]) : asc(classrooms[sortId]);
@@ -32,22 +68,43 @@ export const load = async ({ url }) => {
 
   const [classroomsResult, classroomsCount] = await Promise.all([
     db
-      .select()
+      .select({
+        ...getTableColumns(classrooms),
+        teacher: {
+          fullName: sql`${teachers.firstName} || ' ' || ${teachers.lastName}`,
+        },
+      })
       .from(classrooms)
+      .leftJoin(students, eq(classrooms.id, students.classroomId))
+      .leftJoin(teachers, eq(classrooms.teacherId, teachers.id))
+      .leftJoin(
+        subjectsToClassrooms,
+        eq(subjectsToClassrooms.classroomId, classrooms.id)
+      )
+      .leftJoin(subjects, eq(subjectsToClassrooms.subjectId, subjects.id))
       .where(or(...filters))
+      .groupBy(classrooms.id)
       .orderBy(orderBy)
       .limit(limit)
       .offset(offset),
     db
       .select({ count: count() })
       .from(classrooms)
-      .where(or(...filters)),
+      .leftJoin(students, eq(classrooms.id, students.classroomId))
+      .leftJoin(teachers, eq(classrooms.teacherId, teachers.id))
+      .leftJoin(
+        subjectsToClassrooms,
+        eq(subjectsToClassrooms.classroomId, classrooms.id)
+      )
+      .leftJoin(subjects, eq(subjectsToClassrooms.subjectId, subjects.id))
+      .where(or(...filters))
+      .groupBy(classrooms.id),
   ]);
 
   return {
     classrooms: classroomsResult,
     columnFilters,
-    pageCount: Math.floor(classroomsCount[0].count / limit) + 1,
+    pageCount: Math.ceil(classroomsCount.length / limit),
     pageSize: limit,
     sortId,
     order,

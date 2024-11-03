@@ -9,28 +9,17 @@
   import { Button } from '$lib/components/ui/button/index.js';
   import { cn } from '$lib/utils.js';
 
-  let { value = $bindable(), items, placeholder, ...restProps } = $props();
+  let { value = $bindable([]), items, placeholder, ...restProps } = $props();
 
   let open = $state(false);
   let triggerRef = $state(null);
 
-  let selectedValue = $state(items.filter((item) => item.value === value)[0]);
   let searchValue = $state('');
   let filteredItems = $derived(
     items.filter(({ label }) =>
       label.toLowerCase().includes(searchValue.toLowerCase())
     )
   );
-
-  // We want to refocus the trigger button when the user selects
-  // an item from the list so users can continue navigating the
-  // rest of the form with the keyboard.
-  function closeAndFocusTrigger() {
-    open = false;
-    tick().then(() => {
-      triggerRef.focus();
-    });
-  }
 </script>
 
 <Popover.Root bind:open>
@@ -43,7 +32,7 @@
         role="combobox"
         aria-expanded={open}
       >
-        {selectedValue?.label || placeholder}
+        {placeholder}
         <ChevronsUpDown class="size-4 opacity-50" />
       </Button>
     {/snippet}
@@ -57,20 +46,22 @@
           data={filteredItems}
           style="height: {filteredItems.length * 32 +
             8}px; max-height: 300px; padding: 0.25rem"
-          getKey={(_, i) => i}
+          getKey={({ id }) => id}
         >
           {#snippet children(item)}
             <Command.Item
               onSelect={() => {
-                value = item.value;
-                selectedValue = item;
-                closeAndFocusTrigger();
+                if (value.includes(item.value)) {
+                  value = value.filter((v) => v != item.value);
+                } else {
+                  value = [...value, item.value];
+                }
               }}
             >
               <Check
                 class={cn(
                   'size-4',
-                  !(selectedValue?.id === item.id) && 'text-transparent'
+                  !value.includes(item.value) && 'text-transparent'
                 )}
               />
               {item.label}

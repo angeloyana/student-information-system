@@ -25,32 +25,47 @@ export const columns = [
     enableColumnFilter: false,
   },
   {
-    accessorKey: 'name',
+    accessorKey: 'firstName',
     header: ({ column }) =>
       renderComponent(SortButton, {
-        label: 'Name',
+        label: 'First Name',
         order: column.getIsSorted(),
         onclick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
       }),
     cell: (props) => props.getValue(),
     meta: {
-      label: 'Name',
+      label: 'First Name',
     },
   },
   {
-    id: 'studentId',
-    header: 'Students',
+    accessorKey: 'lastName',
+    header: ({ column }) =>
+      renderComponent(SortButton, {
+        label: 'Last Name',
+        order: column.getIsSorted(),
+        onclick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+      }),
+    cell: (props) => props.getValue(),
+    meta: {
+      label: 'Last Name',
+    },
+  },
+  {
+    accessorKey: 'email',
+    header: 'Email',
+    cell: (props) => props.getValue(),
+  },
+  {
+    id: 'classroomName',
+    header: 'Classrooms',
     accessorFn: () => '',
     cell: ({ row }) =>
       renderComponent(Button, {
-        href: `/students?classroomName=${row.original.name}`,
+        href: `/classrooms?teacherId=${row.original.id}`,
         variant: 'link',
         class: 'p-0',
         text: 'View Details',
       }),
-    meta: {
-      label: 'Student ID',
-    },
   },
   {
     id: 'subjectName',
@@ -58,30 +73,11 @@ export const columns = [
     accessorFn: () => '',
     cell: ({ row }) =>
       renderComponent(Button, {
-        href: `/subjects?classroomName=${row.original.name}`,
+        href: `/subjects?teacherId=${row.original.id}`,
         variant: 'link',
         class: 'p-0',
         text: 'View Details',
       }),
-  },
-  {
-    id: 'teacherId',
-    accessorKey: 'teacher.fullName',
-    header: 'Teacher',
-    cell: (props) => {
-      const teacherName = props.getValue();
-      if (!teacherName) return 'N/A';
-
-      return renderComponent(Button, {
-        href: `/teachers?classroomName=${props.row.original.name}`,
-        variant: 'link',
-        class: 'p-0',
-        text: teacherName,
-      });
-    },
-    meta: {
-      label: 'Teacher ID',
-    },
   },
   {
     id: 'actions',

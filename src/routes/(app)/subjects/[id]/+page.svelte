@@ -6,18 +6,18 @@
   import { Label } from '$lib/components/ui/label';
 
   let { data } = $props();
-  const { classroom } = data;
+  const { subject } = data;
 </script>
 
 <div class="grid gap-4 p-4 md:grid-cols-2">
   <div class="space-y-2">
     <Label>Name</Label>
-    <Input value={classroom.name} disabled />
+    <Input value={subject.name} disabled />
   </div>
   <div class="space-y-2">
-    <Label>Students</Label>
+    <Label>Classrooms</Label>
     <Button
-      href="/students?classroomName={classroom.name}"
+      href="/classrooms?subjectName={subject.name}"
       variant="outline"
       class="w-full justify-start font-normal"
     >
@@ -26,30 +26,14 @@
     </Button>
   </div>
   <div class="space-y-2">
-    <Label>Subjects</Label>
+    <Label>Teachers</Label>
     <Button
-      href="/subjects?classroomName={classroom.name}"
+      href="/teachers?subjectName={subject.name}"
       variant="outline"
       class="w-full justify-start font-normal"
     >
       <ExternalLink class="size-4" />
       View Details
-    </Button>
-  </div>
-  <div class="space-y-2">
-    <Label>Teacher</Label>
-    <Button
-      href="/teachers?classroomName={classroom.name}"
-      variant="outline"
-      disabled={!classroom.teacherId}
-      class="w-full justify-start font-normal"
-    >
-      {#if classroom.teacherId}
-        <ExternalLink class="size-4" />
-        {classroom.teacher.fullName}
-      {:else}
-        N/A
-      {/if}
     </Button>
   </div>
 </div>

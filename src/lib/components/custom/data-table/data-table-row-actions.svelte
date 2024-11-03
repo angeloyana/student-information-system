@@ -1,4 +1,5 @@
 <script>
+  import Copy from 'lucide-svelte/icons/copy';
   import Ellipsis from 'lucide-svelte/icons/ellipsis';
   import Eye from 'lucide-svelte/icons/eye';
   import Pen from 'lucide-svelte/icons/pen';
@@ -12,6 +13,10 @@
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 
   let { rowData } = $props();
+
+  const handleCopyIdBtn = () => {
+    navigator.clipboard.writeText(rowData.id);
+  };
 
   const handleViewBtn = () => {
     goto(`${$page.url.pathname}/${rowData.id}`);
@@ -43,6 +48,10 @@
     {/snippet}
   </DropdownMenu.Trigger>
   <DropdownMenu.Content>
+    <DropdownMenu.Item onclick={handleCopyIdBtn}>
+      <Copy class="size-4" />
+      <span>Copy ID</span>
+    </DropdownMenu.Item>
     <DropdownMenu.Item onclick={handleViewBtn}>
       <Eye class="size-4" />
       <span>View</span>

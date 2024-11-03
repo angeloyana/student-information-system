@@ -38,27 +38,12 @@ export const columns = [
     },
   },
   {
-    id: 'studentId',
-    header: 'Students',
+    id: 'classroomName',
+    header: 'Classrooms',
     accessorFn: () => '',
     cell: ({ row }) =>
       renderComponent(Button, {
-        href: `/students?classroomName=${row.original.name}`,
-        variant: 'link',
-        class: 'p-0',
-        text: 'View Details',
-      }),
-    meta: {
-      label: 'Student ID',
-    },
-  },
-  {
-    id: 'subjectName',
-    header: 'Subjects',
-    accessorFn: () => '',
-    cell: ({ row }) =>
-      renderComponent(Button, {
-        href: `/subjects?classroomName=${row.original.name}`,
+        href: `/classrooms?subjectName=${row.original.name}`,
         variant: 'link',
         class: 'p-0',
         text: 'View Details',
@@ -66,19 +51,15 @@ export const columns = [
   },
   {
     id: 'teacherId',
-    accessorKey: 'teacher.fullName',
-    header: 'Teacher',
-    cell: (props) => {
-      const teacherName = props.getValue();
-      if (!teacherName) return 'N/A';
-
-      return renderComponent(Button, {
-        href: `/teachers?classroomName=${props.row.original.name}`,
+    header: 'Teachers',
+    accessorFn: () => '',
+    cell: ({ row }) =>
+      renderComponent(Button, {
+        href: `/teachers?subjectName=${row.original.name}`,
         variant: 'link',
         class: 'p-0',
-        text: teacherName,
-      });
-    },
+        text: 'View Details',
+      }),
     meta: {
       label: 'Teacher ID',
     },
