@@ -6,5 +6,5 @@ export const formSchema = z.object({
   sex: z.enum(['male', 'female']),
   birthDate: z.string().date(),
   email: z.string().email(),
-  classroomId: z.number().nullable(),
+  classroomId: z.string().nullable(),
 });

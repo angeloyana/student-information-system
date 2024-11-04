@@ -32,7 +32,7 @@
   } = $props();
 
   let columnFilters = $state(initialColumnFilters);
-  let columnVisibility = $state({});
+  let columnVisibility = $state({ id: false });
   let pagination = $state({ pageIndex: 0, pageSize });
   let rowSelection = $state({});
   let sorting = $state(

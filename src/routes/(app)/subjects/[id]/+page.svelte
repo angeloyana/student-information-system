@@ -11,13 +11,17 @@
 
 <div class="grid gap-4 p-4 md:grid-cols-2">
   <div class="space-y-2">
+    <Label>ID</Label>
+    <Input value={subject.id} disabled />
+  </div>
+  <div class="space-y-2">
     <Label>Name</Label>
     <Input value={subject.name} disabled />
   </div>
   <div class="space-y-2">
     <Label>Classrooms</Label>
     <Button
-      href="/classrooms?subjectName={subject.name}"
+      href="/classrooms?subjectId={subject.id}"
       variant="outline"
       class="w-full justify-start font-normal"
     >
@@ -28,7 +32,7 @@
   <div class="space-y-2">
     <Label>Teachers</Label>
     <Button
-      href="/teachers?subjectName={subject.name}"
+      href="/teachers?subjectId={subject.id}"
       variant="outline"
       class="w-full justify-start font-normal"
     >

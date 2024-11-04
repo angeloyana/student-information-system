@@ -25,6 +25,11 @@ export const columns = [
     enableColumnFilter: false,
   },
   {
+    accessorKey: 'id',
+    header: 'ID',
+    cell: (props) => props.getValue(),
+  },
+  {
     accessorKey: 'firstName',
     header: ({ column }) =>
       renderComponent(SortButton, {
@@ -75,7 +80,7 @@ export const columns = [
     cell: (props) => props.getValue(),
   },
   {
-    id: 'classroomName',
+    id: 'classroomId',
     accessorKey: 'classroom.name',
     header: 'Classroom',
     cell: (props) => {
@@ -83,11 +88,14 @@ export const columns = [
       if (!classroomName) return 'N/A';
 
       return renderComponent(Button, {
-        href: `/classrooms?name=${classroomName}`,
+        href: `/classrooms?id=${props.row.original.classroomId}`,
         variant: 'link',
         class: 'p-0',
         text: classroomName,
       });
+    },
+    meta: {
+      label: 'Classroom ID',
     },
   },
   {

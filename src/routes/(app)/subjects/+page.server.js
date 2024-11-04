@@ -13,7 +13,6 @@ import { redirect } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
 import {
-  classrooms,
   subjects,
   subjectsToClassrooms,
   subjectsToTeachers,
@@ -29,24 +28,28 @@ export const load = async ({ locals, url }) => {
   let sortId = url.searchParams.get('sort');
   let order = url.searchParams.get('order');
 
+  const id = url.searchParams.get('id');
   const name = url.searchParams.get('name');
-  const classroomName = url.searchParams.get('classroomName');
-  const teacherId = parseInt(url.searchParams.get('teacherId'));
+  const classroomId = url.searchParams.get('classroomId');
+  const teacherId = url.searchParams.get('teacherId');
 
   const filters = [];
   const columnFilters = [];
   let orderBy = null;
+
+  if (id) {
+    filters.push(eq(subjects.id, id));
+    columnFilters.push({ id: 'id', value: id });
+  }
 
   if (name) {
     filters.push(like(sql`LOWER(${subjects.name})`, `%${name.toLowerCase()}%`));
     columnFilters.push({ id: 'name', value: name });
   }
 
-  if (classroomName) {
-    filters.push(
-      like(sql`LOWER(${classrooms.name})`, `%${classroomName.toLowerCase()}%`)
-    );
-    columnFilters.push({ id: 'classroomName', value: classroomName });
+  if (classroomId) {
+    filters.push(eq(subjectsToClassrooms.classroomId, classroomId));
+    columnFilters.push({ id: 'classroomId', value: classroomId });
   }
 
   if (teacherId) {
@@ -69,7 +72,6 @@ export const load = async ({ locals, url }) => {
         subjectsToClassrooms,
         eq(subjectsToClassrooms.subjectId, subjects.id)
       )
-      .leftJoin(classrooms, eq(subjectsToClassrooms.classroomId, classrooms.id))
       .leftJoin(
         subjectsToTeachers,
         eq(subjectsToTeachers.subjectId, subjects.id)
@@ -86,7 +88,6 @@ export const load = async ({ locals, url }) => {
         subjectsToClassrooms,
         eq(subjectsToClassrooms.subjectId, subjects.id)
       )
-      .leftJoin(classrooms, eq(subjectsToClassrooms.classroomId, classrooms.id))
       .leftJoin(
         subjectsToTeachers,
         eq(subjectsToTeachers.subjectId, subjects.id)

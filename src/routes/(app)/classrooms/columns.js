@@ -25,6 +25,11 @@ export const columns = [
     enableColumnFilter: false,
   },
   {
+    accessorKey: 'id',
+    header: 'ID',
+    cell: (props) => props.getValue(),
+  },
+  {
     accessorKey: 'name',
     header: ({ column }) =>
       renderComponent(SortButton, {
@@ -43,7 +48,7 @@ export const columns = [
     accessorFn: () => '',
     cell: ({ row }) =>
       renderComponent(Button, {
-        href: `/students?classroomName=${row.original.name}`,
+        href: `/students?classroomId=${row.original.id}`,
         variant: 'link',
         class: 'p-0',
         text: 'View Details',
@@ -53,16 +58,19 @@ export const columns = [
     },
   },
   {
-    id: 'subjectName',
+    id: 'subjectId',
     header: 'Subjects',
     accessorFn: () => '',
     cell: ({ row }) =>
       renderComponent(Button, {
-        href: `/subjects?classroomName=${row.original.name}`,
+        href: `/subjects?classroomId=${row.original.id}`,
         variant: 'link',
         class: 'p-0',
         text: 'View Details',
       }),
+    meta: {
+      label: 'Subject ID',
+    },
   },
   {
     id: 'teacherId',
@@ -73,7 +81,7 @@ export const columns = [
       if (!teacherName) return 'N/A';
 
       return renderComponent(Button, {
-        href: `/teachers?classroomName=${props.row.original.name}`,
+        href: `/teachers?id=${props.row.original.teacherId}`,
         variant: 'link',
         class: 'p-0',
         text: teacherName,

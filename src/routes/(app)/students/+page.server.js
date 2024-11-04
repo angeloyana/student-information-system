@@ -24,15 +24,21 @@ export const load = async ({ locals, url }) => {
   let sortId = url.searchParams.get('sort');
   let order = url.searchParams.get('order');
 
+  const id = url.searchParams.get('id');
   const firstName = url.searchParams.get('firstName');
   const lastName = url.searchParams.get('lastName');
   const sex = url.searchParams.get('sex');
   const email = url.searchParams.get('email');
-  const classroomName = url.searchParams.get('classroomName');
+  const classroomId = url.searchParams.get('classroomId');
 
   const filters = [];
   const columnFilters = []; // to be used in client-side
   let orderBy = null;
+
+  if (id) {
+    filters.push(eq(students.id, id));
+    columnFilters.push({ id: 'id', value: id });
+  }
 
   if (firstName) {
     filters.push(
@@ -60,11 +66,9 @@ export const load = async ({ locals, url }) => {
     columnFilters.push({ id: 'email', value: email });
   }
 
-  if (classroomName) {
-    filters.push(
-      like(sql`LOWER(${classrooms.name})`, `%${classroomName.toLowerCase()}%`)
-    );
-    columnFilters.push({ id: 'classroomName', value: classroomName });
+  if (classroomId) {
+    filters.push(eq(students.classroomId, classroomId));
+    columnFilters.push({ id: 'classroomId', value: classroomId });
   }
 
   if (order && sortId in students) {

@@ -11,6 +11,10 @@
 
 <div class="grid gap-4 p-4 md:grid-cols-2">
   <div class="space-y-2">
+    <Label>ID</Label>
+    <Input value={classroom.id} disabled />
+  </div>
+  <div class="space-y-2">
     <Label>Name</Label>
     <Input value={classroom.name} disabled />
   </div>

@@ -14,7 +14,6 @@ import { redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import {
   classrooms,
-  subjects,
   teachers,
   subjectsToTeachers,
 } from '$lib/server/db/schema';
@@ -29,15 +28,21 @@ export const load = async ({ locals, url }) => {
   let sortId = url.searchParams.get('sort');
   let order = url.searchParams.get('order');
 
+  const id = url.searchParams.get('id');
   const firstName = url.searchParams.get('firstName');
   const lastName = url.searchParams.get('lastName');
   const email = url.searchParams.get('email');
-  const classroomName = url.searchParams.get('classroomName');
-  const subjectName = url.searchParams.get('subjectName');
+  const classroomId = url.searchParams.get('classroomId');
+  const subjectId = url.searchParams.get('subjectId');
 
   const filters = [];
   const columnFilters = []; // to be used in client-side
   let orderBy = null;
+
+  if (id) {
+    filters.push(eq(teachers.id, id));
+    columnFilters.push({ id: 'id', value: id });
+  }
 
   if (firstName) {
     filters.push(
@@ -60,18 +65,14 @@ export const load = async ({ locals, url }) => {
     columnFilters.push({ id: 'email', value: email });
   }
 
-  if (classroomName) {
-    filters.push(
-      like(sql`LOWER(${classrooms.name})`, `%${classroomName.toLowerCase()}%`)
-    );
-    columnFilters.push({ id: 'classroomName', value: classroomName });
+  if (classroomId) {
+    filters.push(eq(classrooms.id, classroomId));
+    columnFilters.push({ id: 'classroomId', value: classroomId });
   }
 
-  if (subjectName) {
-    filters.push(
-      like(sql`LOWER(${subjects.name})`, `%${subjectName.toLowerCase()}%`)
-    );
-    columnFilters.push({ id: 'subjectName', value: subjectName });
+  if (subjectId) {
+    filters.push(eq(subjectsToTeachers.subjectId, subjectId));
+    columnFilters.push({ id: 'subjectId', value: subjectId });
   }
 
   if (order && sortId in teachers) {
@@ -90,7 +91,6 @@ export const load = async ({ locals, url }) => {
         subjectsToTeachers,
         eq(subjectsToTeachers.teacherId, teachers.id)
       )
-      .leftJoin(subjects, eq(subjectsToTeachers.subjectId, subjects.id))
       .where(or(...filters))
       .groupBy(teachers.id)
       .orderBy(orderBy)
@@ -104,7 +104,6 @@ export const load = async ({ locals, url }) => {
         subjectsToTeachers,
         eq(subjectsToTeachers.teacherId, teachers.id)
       )
-      .leftJoin(subjects, eq(subjectsToTeachers.subjectId, subjects.id))
       .where(or(...filters))
       .groupBy(teachers.id),
   ]);

@@ -30,14 +30,20 @@ export const load = async ({ locals, url }) => {
   let sortId = url.searchParams.get('sort');
   let order = url.searchParams.get('order');
 
+  const id = url.searchParams.get('id');
   const name = url.searchParams.get('name');
-  const studentId = parseInt(url.searchParams.get('studentId'));
-  const subjectName = url.searchParams.get('subjectName');
-  const teacherId = parseInt(url.searchParams.get('teacherId'));
+  const studentId = url.searchParams.get('studentId');
+  const subjectId = url.searchParams.get('subjectId');
+  const teacherId = url.searchParams.get('teacherId');
 
   const filters = [];
   const columnFilters = [];
   let orderBy = null;
+
+  if (id) {
+    filters.push(eq(classrooms.id, id));
+    columnFilters.push({ id: 'id', value: id });
+  }
 
   if (name) {
     filters.push(
@@ -51,11 +57,9 @@ export const load = async ({ locals, url }) => {
     columnFilters.push({ id: 'studentId', value: studentId });
   }
 
-  if (subjectName) {
-    filters.push(
-      like(sql`LOWER(${subjects.name})`, `%${subjectName.toLowerCase()}%`)
-    );
-    columnFilters.push({ id: 'subjectName', value: subjectName });
+  if (subjectId) {
+    filters.push(eq(subjectsToClassrooms.subjectId, subjectId));
+    columnFilters.push({ id: 'subjectId', value: subjectId });
   }
 
   if (teacherId) {
@@ -86,7 +90,6 @@ export const load = async ({ locals, url }) => {
         subjectsToClassrooms,
         eq(subjectsToClassrooms.classroomId, classrooms.id)
       )
-      .leftJoin(subjects, eq(subjectsToClassrooms.subjectId, subjects.id))
       .where(or(...filters))
       .groupBy(classrooms.id)
       .orderBy(orderBy)
@@ -101,7 +104,6 @@ export const load = async ({ locals, url }) => {
         subjectsToClassrooms,
         eq(subjectsToClassrooms.classroomId, classrooms.id)
       )
-      .leftJoin(subjects, eq(subjectsToClassrooms.subjectId, subjects.id))
       .where(or(...filters))
       .groupBy(classrooms.id),
   ]);

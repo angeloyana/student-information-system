@@ -12,6 +12,10 @@
 
 <div class="grid gap-4 p-4 md:grid-cols-2">
   <div class="space-y-2">
+    <Label>ID</Label>
+    <Input value={student.id} disabled />
+  </div>
+  <div class="space-y-2">
     <Label>First Name</Label>
     <Input value={student.firstName} disabled />
   </div>
@@ -34,14 +38,14 @@
   <div class="space-y-2">
     <Label>Classroom</Label>
     <Button
-      href="/classrooms?name={student.classroom?.name}"
+      href="/classrooms?id={student.classroomId}"
       variant="outline"
-      disabled={!student.classroom}
+      disabled={!student.classroomId}
       class="w-full justify-start font-normal"
     >
-      {#if student.classroom?.name}
+      {#if student.classroomId}
         <ExternalLink class="size-4" />
-        {student.classroom?.name}
+        {student.classroom.name}
       {:else}
         N/A
       {/if}
