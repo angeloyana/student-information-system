@@ -17,6 +17,7 @@ export const lucia = new Lucia(adapter, {
     firstName: data.firstName,
     lastName: data.lastName,
     fullName: `${data.firstName} ${data.lastName}`,
+    role: data.role,
     email: data.email,
   }),
 });

@@ -13,10 +13,17 @@ if (!DATABASE_URL) {
 const client = new Database(DATABASE_URL);
 const db = drizzle(client);
 
-const [firstName, lastName, email, password] = process.argv.slice(2);
-if (!firstName || !lastName || !email || !password) {
+const [firstName, lastName, role, email, password] = process.argv.slice(2);
+if (
+  !firstName ||
+  !lastName ||
+  !email ||
+  !password ||
+  !role ||
+  !['superuser', 'admin'].includes(role)
+) {
   console.log(
-    'Usage: npm run app:create-user <first_name> <last_name> <email> <password>'
+    'Usage: npm run app:create-user <first_name> <last_name> <superuser|admin> <email> <password>'
   );
   process.exit(1);
 }
@@ -26,6 +33,7 @@ const hashedPassword = await bcrypt.hash(password, salt);
 await db.insert(users).values({
   firstName,
   lastName,
+  role,
   email,
   password: hashedPassword,
 });

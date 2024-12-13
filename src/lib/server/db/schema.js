@@ -82,6 +82,7 @@ export const users = sqliteTable('users', {
     .$defaultFn(() => uuidv4()),
   firstName: text('first_name').notNull(),
   lastName: text('last_name').notNull(),
+  role: text('role').notNull(),
   email: text('email').notNull().unique(),
   password: text('password').notNull(),
 });

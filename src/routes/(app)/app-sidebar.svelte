@@ -43,16 +43,19 @@
       icon: BookType,
     },
     {
-      title: 'Users',
-      pathname: '/users',
-      icon: Users,
-    },
-    {
       title: 'Activity Logs',
       pathname: '/activity-logs',
       icon: FileClock,
     },
   ];
+
+  if ($page.data.user.role == 'superuser') {
+    routes.push({
+      title: 'Users',
+      pathname: '/users',
+      icon: Users,
+    });
+  }
 </script>
 
 <Sidebar.Root collapsible="icon">
