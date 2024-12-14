@@ -5,6 +5,7 @@ import { error, redirect } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
 import { classrooms, students } from '$lib/server/db/schema';
+import { log } from '$lib/server/utils';
 import { formSchema } from '../../form-schema';
 
 export const load = async ({ locals, params }) => {
@@ -51,13 +52,16 @@ export const actions = {
     }
 
     const { data } = form;
+    const studentId = event.params.id;
     await db
       .update(students)
       .set({
         ...data,
         birthDate: new Date(data.birthDate),
       })
-      .where(eq(students.id, event.params.id));
+      .where(eq(students.id, studentId));
+
+    await log(event.locals.user.id, 'update', 'student', studentId);
 
     return {
       form,

@@ -5,13 +5,14 @@ import { error, fail, redirect } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
 import { users } from '$lib/server/db/schema';
+import { log } from '$lib/server/utils';
 import { formSchema } from '../form-schema';
 
 export const load = async ({ locals }) => {
   if (!locals.user) {
     redirect(302, '/auth/login');
   }
-  
+
   if (locals.user.role != 'superuser') {
     error(401, 'Unauthorized');
   }
@@ -26,7 +27,7 @@ export const actions = {
     if (!event.locals.user) {
       redirect(302, '/auth/login');
     }
-    
+
     if (event.locals.user.role != 'superuser') {
       error(401, 'Unauthorized');
     }
@@ -42,7 +43,12 @@ export const actions = {
     const { password, ...userData } = form.data;
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
-    await db.insert(users).values({ ...userData, password: hashedPassword });
+    const [user] = await db
+      .insert(users)
+      .values({ ...userData, password: hashedPassword })
+      .returning();
+
+    await log(event.locals.user.id, 'create', 'user', user.id);
 
     return {
       form,

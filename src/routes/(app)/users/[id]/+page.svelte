@@ -10,6 +10,10 @@
 
 <div class="grid gap-4 p-4 md:grid-cols-2">
   <div class="space-y-2">
+    <Label>ID</Label>
+    <Input value={user.id} disabled />
+  </div>
+  <div class="space-y-2">
     <Label>First Name</Label>
     <Input value={user.firstName} disabled />
   </div>

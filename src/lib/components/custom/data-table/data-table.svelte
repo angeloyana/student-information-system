@@ -29,6 +29,7 @@
     pageSize,
     sortId,
     order,
+    readOnly,
   } = $props();
 
   let columnFilters = $state(initialColumnFilters);
@@ -190,9 +191,11 @@
       </Popover.Content>
     </Popover.Root>
     <div class="flex gap-2">
-      <Button size="icon" onclick={handleOpenCreateForm}>
-        <Plus class="size-4" />
-      </Button>
+      {#if !readOnly}
+        <Button size="icon" onclick={handleOpenCreateForm}>
+          <Plus class="size-4" />
+        </Button>
+      {/if}
       <form
         method="POST"
         action="?/delete"
@@ -202,14 +205,16 @@
         {#each Object.keys(rowSelection) as id}
           <input type="hidden" name="id" value={id} />
         {/each}
-        <Button
-          type="submit"
-          variant="destructive"
-          disabled={!Object.keys(rowSelection).length}
-        >
-          <Trash2 class="size-4" />
-          <span>Delete</span>
-        </Button>
+        {#if !readOnly}
+          <Button
+            type="submit"
+            variant="destructive"
+            disabled={!Object.keys(rowSelection).length}
+          >
+            <Trash2 class="size-4" />
+            <span>Delete</span>
+          </Button>
+        {/if}
       </form>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>

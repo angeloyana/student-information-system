@@ -11,6 +11,7 @@ import {
   subjectsToTeachers,
 } from '$lib/server/db/schema';
 import { formSchema } from '../form-schema';
+import { log } from '$lib/server/utils';
 
 export const load = async ({ locals }) => {
   if (!locals.user) {
@@ -60,6 +61,8 @@ export const actions = {
         }))
       );
     }
+
+    await log(event.locals.user.id, 'create', 'teacher', teacher.id);
 
     return {
       form,

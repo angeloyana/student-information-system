@@ -4,6 +4,8 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { fail, redirect } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
+import { log } from '$lib/server/utils';
+
 import {
   classrooms,
   subjects,
@@ -60,6 +62,8 @@ export const actions = {
         }))
       );
     }
+
+    await log(event.locals.user.id, 'create', 'classroom', classroom.id);
 
     return {
       form,

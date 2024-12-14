@@ -13,6 +13,7 @@ import { error, redirect } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
 import { users } from '$lib/server/db/schema';
+import { log } from '$lib/server/utils';
 
 export const load = async ({ locals, url }) => {
   if (!locals.user) {
@@ -91,7 +92,7 @@ export const load = async ({ locals, url }) => {
   return {
     users: usersResult,
     columnFilters,
-    pageCount: Math.ceil(usersCount.length / limit),
+    pageCount: Math.ceil(usersCount[0].count / limit),
     pageSize: limit,
     sortId,
     order,
@@ -112,6 +113,9 @@ export const actions = {
     const ids = formData.getAll('id');
 
     await db.delete(users).where(inArray(users.id, ids));
+    for (const id of ids) {
+      await log(locals.user.id, 'delete', 'user', id);
+    }
 
     return { success: true };
   },

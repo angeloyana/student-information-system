@@ -42,19 +42,21 @@
       pathname: '/subjects',
       icon: BookType,
     },
-    {
-      title: 'Activity Logs',
-      pathname: '/activity-logs',
-      icon: FileClock,
-    },
   ];
 
   if ($page.data.user.role == 'superuser') {
-    routes.push({
-      title: 'Users',
-      pathname: '/users',
-      icon: Users,
-    });
+    routes.push(
+      {
+        title: 'Users',
+        pathname: '/users',
+        icon: Users,
+      },
+      {
+        title: 'Activity Logs',
+        pathname: '/activity-logs',
+        icon: FileClock,
+      }
+    );
   }
 </script>
 
@@ -120,7 +122,9 @@
             <span class="truncate text-sm font-semibold"
               >{$page.data.user.fullName}</span
             >
-            <span class="truncate text-xs">Superuser</span>
+            <span class="truncate text-xs capitalize"
+              >{$page.data.user.role}</span
+            >
           </div>
         </Sidebar.MenuButton>
       </Sidebar.MenuItem>

@@ -17,6 +17,7 @@ import {
   subjectsToClassrooms,
   subjectsToTeachers,
 } from '$lib/server/db/schema';
+import { log } from '$lib/server/utils';
 
 export const load = async ({ locals, url }) => {
   if (!locals.user) {
@@ -116,6 +117,9 @@ export const actions = {
     const ids = formData.getAll('id');
 
     await db.delete(subjects).where(inArray(subjects.id, ids));
+    for (const id of ids) {
+      await log(locals.user.id, 'delete', 'subject', id);
+    }
 
     return { success: true };
   },

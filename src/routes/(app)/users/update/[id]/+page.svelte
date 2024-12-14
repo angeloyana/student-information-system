@@ -75,7 +75,7 @@
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Password</Form.Label>
-          <Input bind:value={$formData.password} {...props} />
+          <Input type="password" bind:value={$formData.password} {...props} />
         {/snippet}
       </Form.Control>
       <Form.FieldErrors />

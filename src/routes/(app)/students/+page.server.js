@@ -13,6 +13,7 @@ import { redirect } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
 import { classrooms, students } from '$lib/server/db/schema';
+import { log } from '$lib/server/utils';
 
 export const load = async ({ locals, url }) => {
   if (!locals.user) {
@@ -117,6 +118,9 @@ export const actions = {
     const ids = formData.getAll('id');
 
     await db.delete(students).where(inArray(students.id, ids));
+    for (const id of ids) {
+      await log(locals.user.id, 'delete', 'student', id);
+    }
 
     return { success: true };
   },

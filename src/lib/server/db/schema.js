@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { sql } from 'drizzle-orm';
 import {
   sqliteTable,
   text,
@@ -95,4 +96,17 @@ export const sessions = sqliteTable('sessions', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   expiresAt: integer('expires_at').notNull(),
+});
+
+export const activityLogs = sqliteTable('activity_logs', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => uuidv4()),
+  action: text('action').notNull(),
+  objectType: text('object_type').notNull(),
+  objectId: text('object_id').notNull(),
+  userId: text('user_id').references(() => users.id, { onDelete: 'set null' }),
+  timestamp: integer('timestamp', { mode: 'timestamp' }).default(
+    sql`(unixepoch())`
+  ),
 });

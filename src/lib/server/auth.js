@@ -14,6 +14,7 @@ export const lucia = new Lucia(adapter, {
     },
   },
   getUserAttributes: (data) => ({
+    id: data.id,
     firstName: data.firstName,
     lastName: data.lastName,
     fullName: `${data.firstName} ${data.lastName}`,

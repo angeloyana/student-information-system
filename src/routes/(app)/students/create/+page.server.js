@@ -4,6 +4,7 @@ import { fail, redirect } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
 import { classrooms, students } from '$lib/server/db/schema';
+import { log } from '$lib/server/utils';
 import { formSchema } from '../form-schema';
 
 export const load = async ({ locals }) => {
@@ -34,10 +35,15 @@ export const actions = {
     }
 
     const { data } = form;
-    await db.insert(students).values({
-      ...data,
-      birthDate: new Date(data.birthDate),
-    });
+    const [student] = await db
+      .insert(students)
+      .values({
+        ...data,
+        birthDate: new Date(data.birthDate),
+      })
+      .returning();
+
+    await log(event.locals.user.id, 'create', 'student', student.id);
 
     return {
       form,
