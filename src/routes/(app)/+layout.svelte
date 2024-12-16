@@ -9,7 +9,7 @@
 
 <Sidebar.Provider>
   <AppSidebar />
-  <main class="flex-1">
+  <Sidebar.Inset>
     <header
       class="flex h-16 items-center px-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12"
     >
@@ -19,6 +19,8 @@
         <h1>{$page.data.title}</h1>
       </div>
     </header>
-    {@render children?.()}
-  </main>
+    <div class="flex-1">
+      {@render children?.()}
+    </div>
+  </Sidebar.Inset>
 </Sidebar.Provider>
