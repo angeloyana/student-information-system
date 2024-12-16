@@ -40,8 +40,14 @@
             {...props}
           >
             <Avatar.Root class="size-8 rounded-lg">
-              <Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />
-              <Avatar.Fallback>CN</Avatar.Fallback>
+              <Avatar.Image
+                src="/default-avatar.png"
+                alt={$page.data.user.fullName}
+              />
+              <Avatar.Fallback
+                >{$page.data.user.firstName[0] +
+                  $page.data.user.lastName[0]}</Avatar.Fallback
+              >
             </Avatar.Root>
             <div class="grid flex-1 text-left text-sm leading-tight">
               <span class="truncate font-semibold"
@@ -64,8 +70,14 @@
         <DropdownMenu.Label class="p-0 font-normal">
           <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
             <Avatar.Root class="size-8 rounded-lg">
-              <Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />
-              <Avatar.Fallback>CN</Avatar.Fallback>
+              <Avatar.Image
+                src="/default-avatar.png"
+                alt={$page.data.user.fullName}
+              />
+              <Avatar.Fallback
+                >{$page.data.user.firstName[0] +
+                  $page.data.user.lastName[0]}</Avatar.Fallback
+              >
             </Avatar.Root>
             <div class="grid flex-1 text-left text-sm leading-tight">
               <span class="truncate font-semibold"

@@ -42,6 +42,8 @@ export const load = async ({ locals }) => {
       .select({
         ...getTableColumns(activityLogs),
         user: {
+          firstName: users.firstName,
+          lastName: users.lastName,
           fullName: sql`${users.firstName} || ' ' || ${users.lastName}`,
           role: users.role,
         },

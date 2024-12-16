@@ -49,10 +49,13 @@
                     <div class="flex gap-2">
                       <Avatar.Root>
                         <Avatar.Image
-                          src="https://github.com/shadcn.png"
-                          alt="@shadcn"
+                          src="/default-avatar.png"
+                          alt={activity.user.fullName}
                         />
-                        <Avatar.Fallback>CN</Avatar.Fallback>
+                        <Avatar.Fallback
+                          >{activity.user.firstName[0] +
+                            activity.user.lastName[0]}</Avatar.Fallback
+                        >
                       </Avatar.Root>
                       <div>
                         <div class="font-semibold">
