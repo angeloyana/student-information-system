@@ -1,6 +1,7 @@
 <script>
   import ChevronsUpDown from 'lucide-svelte/icons/chevrons-up-down';
   import LogOut from 'lucide-svelte/icons/log-out';
+  import User from 'lucide-svelte/icons/user';
   import { toast } from 'svelte-sonner';
 
   import { enhance } from '$app/forms';
@@ -77,6 +78,12 @@
           </div>
         </DropdownMenu.Label>
         <DropdownMenu.Separator />
+        <a href="/account" class="contents">
+          <DropdownMenu.Item>
+            <User />
+            Account
+          </DropdownMenu.Item>
+        </a>
         <form
           method="POST"
           action="/auth/logout"
