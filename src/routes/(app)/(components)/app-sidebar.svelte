@@ -13,8 +13,8 @@
 
   import { page } from '$app/stores';
   import { Button } from '$lib/components/ui/button';
-  import * as Avatar from '$lib/components/ui/avatar';
   import * as Sidebar from '$lib/components/ui/sidebar';
+  import UserMenu from './user-menu.svelte';
 
   const routes = [
     {
@@ -61,7 +61,7 @@
 </script>
 
 <Sidebar.Root collapsible="icon">
-  <Sidebar.Footer>
+  <Sidebar.Header>
     <Sidebar.Menu>
       <Sidebar.MenuItem>
         <Sidebar.MenuButton size="lg">
@@ -88,7 +88,7 @@
         </Sidebar.MenuButton>
       </Sidebar.MenuItem>
     </Sidebar.Menu>
-  </Sidebar.Footer>
+  </Sidebar.Header>
   <Sidebar.Content>
     <Sidebar.Group>
       <Sidebar.GroupLabel>Application</Sidebar.GroupLabel>
@@ -111,23 +111,6 @@
     </Sidebar.Group>
   </Sidebar.Content>
   <Sidebar.Footer>
-    <Sidebar.Menu>
-      <Sidebar.MenuItem>
-        <Sidebar.MenuButton size="lg">
-          <Avatar.Root class="size-8 rounded-lg">
-            <Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />
-            <Avatar.Fallback>CN</Avatar.Fallback>
-          </Avatar.Root>
-          <div class="grid leading-tight">
-            <span class="truncate text-sm font-semibold"
-              >{$page.data.user.fullName}</span
-            >
-            <span class="truncate text-xs capitalize"
-              >{$page.data.user.role}</span
-            >
-          </div>
-        </Sidebar.MenuButton>
-      </Sidebar.MenuItem>
-    </Sidebar.Menu>
+    <UserMenu />
   </Sidebar.Footer>
 </Sidebar.Root>

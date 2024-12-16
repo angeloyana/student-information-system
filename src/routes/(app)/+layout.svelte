@@ -2,7 +2,7 @@
   import { page } from '$app/stores';
   import { Separator } from '$lib/components/ui/separator';
   import * as Sidebar from '$lib/components/ui/sidebar';
-  import AppSidebar from './app-sidebar.svelte';
+  import AppSidebar from './(components)/app-sidebar.svelte';
 
   let { children } = $props();
 </script>
