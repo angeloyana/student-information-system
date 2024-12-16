@@ -1,3 +1,4 @@
+import lodash from 'lodash-es';
 import { RowActions, SortButton } from '$lib/components/custom/data-table';
 import { Button } from '$lib/components/ui/button';
 import { Checkbox } from '$lib/components/ui/checkbox';
@@ -58,7 +59,7 @@ export const columns = [
   {
     accessorKey: 'sex',
     header: 'Sex',
-    cell: (props) => props.getValue(),
+    cell: (props) => lodash.capitalize(props.getValue()),
   },
   {
     accessorKey: 'birthDate',

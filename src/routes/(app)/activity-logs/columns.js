@@ -1,3 +1,5 @@
+import lodash from 'lodash-es';
+
 import { SortButton } from '$lib/components/custom/data-table';
 import { Button } from '$lib/components/ui/button';
 import { Checkbox } from '$lib/components/ui/checkbox';
@@ -36,18 +38,18 @@ export const columns = [
     cell: (props) => {
       const userRole = props.getValue();
       if (!userRole) return 'N/A';
-      return userRole;
+      return lodash.capitalize(userRole);
     },
   },
   {
     accessorKey: 'action',
     header: 'Action',
-    cell: (props) => props.getValue(),
+    cell: (props) => lodash.capitalize(props.getValue()),
   },
   {
     accessorKey: 'objectType',
     header: 'Object Type',
-    cell: (props) => props.getValue(),
+    cell: (props) => lodash.capitalize(props.getValue()),
   },
   {
     accessorKey: 'objectId',
