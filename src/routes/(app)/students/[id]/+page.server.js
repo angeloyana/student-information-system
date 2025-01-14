@@ -1,5 +1,5 @@
 import { eq, getTableColumns } from 'drizzle-orm';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
 import { classrooms, students } from '$lib/server/db/schema';

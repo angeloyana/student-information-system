@@ -2,7 +2,6 @@
   import Copy from 'lucide-svelte/icons/copy';
   import Ellipsis from 'lucide-svelte/icons/ellipsis';
   import Eye from 'lucide-svelte/icons/eye';
-  import { toast } from 'svelte-sonner';
 
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';

@@ -4,11 +4,9 @@
   import { zodClient } from 'sveltekit-superforms/adapters';
 
   import { goto } from '$app/navigation';
-  import Combobox from '$lib/components/custom/combobox.svelte';
   import MultiSelect from '$lib/components/custom/multi-select.svelte';
   import { Input } from '$lib/components/ui/input';
   import * as Form from '$lib/components/ui/form';
-  import * as Select from '$lib/components/ui/select';
   import { formSchema } from '../../form-schema';
 
   let { data } = $props();
@@ -73,6 +71,7 @@
             items={classrooms}
             placeholder="Select classrooms..."
             bind:value={$formData.classroomIds}
+            {...props}
           />
         {/snippet}
       </Form.Control>
@@ -89,6 +88,7 @@
             items={subjects}
             placeholder="Select subjects..."
             bind:value={$formData.subjectIds}
+            {...props}
           />
         {/snippet}
       </Form.Control>

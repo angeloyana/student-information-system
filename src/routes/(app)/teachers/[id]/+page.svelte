@@ -1,5 +1,4 @@
 <script>
-  import lodash from 'lodash-es';
   import ExternalLink from 'lucide-svelte/icons/external-link';
 
   import { Button } from '$lib/components/ui/button';

@@ -3,7 +3,6 @@
   import { zodClient } from 'sveltekit-superforms/adapters';
   import { toast } from 'svelte-sonner';
 
-  import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import * as Form from '$lib/components/ui/form';
   import { generalFormSchema, passwordFormSchema } from './formSchema';

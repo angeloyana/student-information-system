@@ -1,6 +1,4 @@
 <script>
-  import GraduationCap from 'lucide-svelte/icons/graduation-cap';
-
   import * as Avatar from '$lib/components/ui/avatar';
   import * as Card from '$lib/components/ui/card';
   import * as Table from '$lib/components/ui/table';

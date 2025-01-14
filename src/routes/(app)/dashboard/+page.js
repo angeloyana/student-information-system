@@ -3,8 +3,6 @@ import GraduationCap from 'lucide-svelte/icons/graduation-cap';
 import Presentation from 'lucide-svelte/icons/presentation';
 import Users from 'lucide-svelte/icons/users';
 
-import { page } from '$app/stores';
-
 export const load = ({ data }) => {
   const {
     totalStudents,

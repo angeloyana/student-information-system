@@ -47,7 +47,6 @@ export function createSvelteTable(options) {
       return mergeObjects(prev, options, {
         state: mergeObjects(state, options.state || {}),
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onStateChange: (updater) => {
           if (updater instanceof Function) state = updater(state);
           else state = mergeObjects(state, updater);
@@ -71,8 +70,6 @@ export function createSvelteTable(options) {
  * Merges objects together while keeping their getters alive.
  * Taken from SolidJS: {@link https://github.com/solidjs/solid/blob/24abc825c0996fd2bc8c1de1491efe9a7e743aff/packages/solid/src/server/rendering.ts#L82-L115}
  */
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mergeObjects(...sources) {
   const target = {};
   for (let i = 0; i < sources.length; i++) {
@@ -84,6 +81,7 @@ function mergeObjects(...sources) {
         if (key in target) continue;
         Object.defineProperty(target, key, {
           enumerable: true,
+          // eslint-disable-next-line getter-return
           get() {
             for (let i = sources.length - 1; i >= 0; i--) {
               let s = sources[i];

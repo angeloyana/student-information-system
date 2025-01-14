@@ -1,9 +1,8 @@
 import bcrypt from 'bcrypt';
-import { eq, getTableColumns, inArray, isNull, or } from 'drizzle-orm';
+import { eq, getTableColumns } from 'drizzle-orm';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { z } from 'zod';
-import { error, redirect } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
 import { users } from '$lib/server/db/schema';
@@ -19,7 +18,8 @@ export const load = async ({ locals, params }) => {
     error(401, 'Unauthorized');
   }
 
-  const { password, ...userColumns } = getTableColumns(users);
+  const userColumns = getTableColumns(users);
+  delete userColumns.password;
   const result = await db
     .select(userColumns)
     .from(users)

@@ -1,4 +1,4 @@
-import { eq, inArray, isNull } from 'drizzle-orm';
+import { inArray, isNull } from 'drizzle-orm';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { fail, redirect } from '@sveltejs/kit';

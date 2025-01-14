@@ -8,7 +8,6 @@
   import MultiSelect from '$lib/components/custom/multi-select.svelte';
   import { Input } from '$lib/components/ui/input';
   import * as Form from '$lib/components/ui/form';
-  import * as Select from '$lib/components/ui/select';
   import { formSchema } from '../form-schema';
 
   let { data } = $props();
@@ -55,6 +54,7 @@
             items={subjects}
             placeholder="Select subjects..."
             bind:value={$formData.subjectIds}
+            {...props}
           />
         {/snippet}
       </Form.Control>
@@ -71,6 +71,7 @@
             items={teachers}
             placeholder="Select teacher..."
             bind:value={$formData.teacherId}
+            {...props}
           />
         {/snippet}
       </Form.Control>

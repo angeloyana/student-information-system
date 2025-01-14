@@ -4,7 +4,6 @@ import {
   desc,
   eq,
   getTableColumns,
-  inArray,
   like,
   or,
   sql,
@@ -13,7 +12,6 @@ import { error, redirect } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
 import { activityLogs, users } from '$lib/server/db/schema';
-import { log } from '$lib/server/utils';
 
 export const load = async ({ locals, url }) => {
   if (!locals.user) {

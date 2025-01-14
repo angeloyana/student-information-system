@@ -1,4 +1,4 @@
-import { eq, getTableColumns } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { error, redirect } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';

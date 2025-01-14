@@ -15,7 +15,6 @@ import { db } from '$lib/server/db';
 import {
   classrooms,
   students,
-  subjects,
   teachers,
   subjectsToClassrooms,
 } from '$lib/server/db/schema';
